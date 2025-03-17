@@ -7,10 +7,15 @@ import os, sys, re
 #  fd #1 is "standard ouput" (by default, attached to display)
 #  fd #2 is "standard error" (by default, attached to display for error output)
 
+PS1 = "$ "
+
+if 'PS1' in os.environ:
+    PS1 = os.environ['PS1']
+
 while 1:
     # we do input 
     # look into env variables and PS1
-    arg = input("$ ")
+    arg = input("%s" % PS1)
     argv = re.split(" ", arg) # for now, we just work with the first command
     print(argv)
 
