@@ -28,6 +28,8 @@ while 1:
     rc = os.fork()
     
     if rc == 0:
+        if(argv[0] == "exit"):
+            sys.exit(0)
         for dir in re.split(":", os.environ['PATH']): # try each directory in the path
             # os.write(1, ("%s/%s: trying\n" % (dir, argv[0])).encode())
             program = "%s/%s" % (dir, argv[0])
@@ -42,5 +44,6 @@ while 1:
         sys.exit(1)
     else:
         childPidCode = os.wait()
+        if(argv[0] == "exit"): break
         continue
 
