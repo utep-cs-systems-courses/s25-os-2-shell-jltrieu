@@ -14,8 +14,13 @@ if 'PS1' in os.environ:
     PS1 = os.environ['PS1']
 
 while 1:
-    arg = input("%s" % PS1)
-    argv = re.split(" ", arg) # for now, we just work with the first command
+    # replace with os.read(0, ####) ? 
+    #arg = input("%s" % PS1)
+    os.write(1, ("%s" % PS1).encode())
+    arg = os.read(0, 1000) # read 1000 bytes at  a time?
+    arg = arg.decode()
+
+    argv = re.split(" ", arg[:-1]) # for now, we just work with the first command
     print(argv)
 
     # INPUT PROCESSING
