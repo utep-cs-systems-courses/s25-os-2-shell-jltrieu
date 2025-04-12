@@ -9,6 +9,9 @@ import os, sys, re
 
 PS1 = "$ "
 redir = re.compile(">")
+piper = re.compile("\\|")
+backr = re.compile("&")
+background = False
 
 if 'PS1' in os.environ:
     PS1 = os.environ['PS1']
@@ -32,6 +35,13 @@ while 1:
         break
 
     pid = os.getpid()
+    if(backr.search(arg)):
+        background = True
+    else: 
+        background = False
+    # boolean for backgrounds
+    # if false, parent waits
+    # if true, dont wait
     rc = os.fork()
     
     if rc == 0:
@@ -42,11 +52,19 @@ while 1:
             redirIndex = argv.index('>')
             os.open(argv[redirIndex+1], os.O_CREAT | os.O_WRONLY) # hello new output!
             os.set_inheritable(1, True)
+        if piper.search(arg):
+            os.close(1) 
+            pipeIndex = argv.index('|')
+            # do something else here
+            # 
+        if(background == True):
+            argv.pop()
         for dir in re.split(":", os.environ['PATH']): # try each directory in the path
             program = "%s/%s" % (dir, argv[0])
             try:
                 if(redirIndex):
                     argv = argv[:redirIndex]
+
                 os.execve(program, argv, os.environ)
             except FileNotFoundError:
                 pass
@@ -56,5 +74,6 @@ while 1:
         os.write(2, ("fork failed, returning %d\n" % rc).encode())
         sys.exit(1)
     else:
-        childPidCode = os.wait()
+        if(background == False):
+            childPidCode = os.wait()
         continue
